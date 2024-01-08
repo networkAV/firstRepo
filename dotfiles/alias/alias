@@ -1,0 +1,31 @@
+#unalias rm
+#unalias cp
+#unalias mv
+alias l='ls -ltra --color=auto'
+alias la='ls -AXb --group-directories-first'
+alias diff='colordiff'
+alias mkdir='mkdir -pv'
+alias bc='bc -l'
+alias mount='mount |column -t'
+#8: Command short cuts to save time
+alias h='history'
+alias j='jobs -l'
+#9: Create a new set of commands
+alias path='echo -e ${PATH//:/\\n}'
+alias now='date +"%T"'
+alias nowtime=now
+alias nowdate='date +"%d-%m-%Y"'
+#10: Set vim as default
+alias vi=vim
+alias svi='sudo vi'
+#alias vis='vim "+set si"'
+alias edit='vim'
+#11: Control output of networking tools
+alias ping='ping -c 5'
+alias fastping='ping -c 5 -W 0.2'
+## distrp specifc RHEL/CentOS ##
+alias update='sudo yum update'
+alias updatey='sudo yum -y update'
+#19: Tune sudo and su
+# become root #
+alias root='sudo -i'
