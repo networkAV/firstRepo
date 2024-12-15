@@ -71,8 +71,8 @@ then
 echo "Creating IceAdmin account and group"
 
 groupadd pveadmin -g 900
-useradd -g 900 -u 1000 -c "Administrator for Ice Systems" -m -d /home/iceadmin -s /usr/bin/bash iceadmin
-echo "iceadmin:iceadmin" | chpasswd
+useradd -g 900 -u 1000 -c "Administrator for Ice Systems" -m -d /home/iceman -s /usr/bin/bash iceman
+echo "iceman:0201iCe" | chpasswd
 
     # end IceAdmin account
 fi
