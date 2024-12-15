@@ -1,0 +1,221 @@
+Proxmox First Steps
+
+https://technotim.live/posts/first-11-things-proxmox/
+https://www.youtube.com/watch?v=GoZaMgEgrHw
+https://www.youtube.com/watch?v=VAJWUZ3sTSI
+
+# Change hostname
+vi /etc/hosts /etc/hostname /etc/mailname /etc/postfix/main.cf
+
+
+1. Config updates
+   Create a file at /etc/apt/sources.list.d/pve-no-enterprise.list 
+   ----------------------------
+   # not for production use
+   deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription
+   ----------------------------
+   
+   ceph Create a file at /etc/apt/sources.list.d/ceph.list
+   ----------------------------
+   # not for production use
+   deb http://download.proxmox.com/debian/ceph-quincy bookworm no-subscription
+   ----------------------------
+   # For production enterprise use.
+   vi /etc/apt/sources.list.d/pve-no-enterprise.list /etc/apt/sources.list.d/pve-enterprise.list  /etc/apt/sources.list.d/ceph.list
+
+   apt update
+   apt -y install openvswitch-switch net-tools lshw nmap htop fio iperf3 zfsutils zfs-initramfs
+   apt -y dist-upgrade
+
+   apt update
+
+   ----------------------------
+   no sub
+   https://johnscs.com/remove-proxmox51-subscription-notice/
+   https://blog.johnsonpremier.net/proxmox_subscription_notification/
+
+   1. Change to working directory
+      cd /usr/share/javascript/proxmox-widget-toolkit
+   2. Make a backup
+      cp proxmoxlib.js proxmoxlib.js.bak
+   3. Edit the file “proxmoxlib.js”
+      nano proxmoxlib.js
+   4. Locate the following code (Use ctrl+w in nano and search for “function(orig_cmd)”
+      checked_command: function(orig_cmd) {
+   5. Add “orig_cmd();” and “return;” just after it
+      checked_command: function(orig_cmd) {
+          orig_cmd();
+          return;
+   6. Restart the Proxmox web service (also be sure to clear your browser cache, depending on the browser you may need to open a new tab or restart the browser)
+      systemctl restart pveproxy.service
+
+   # This one liner does all 6 steps above:
+     sed -Ezi.bak "s/(function\(orig_cmd\) \{)/\1\n\torig_cmd\(\);\n\treturn;/g" /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js && systemctl restart pveproxy.service
+
+
+2. Storage
+   https://docs.ceph.com/en/latest/cephfs/client-config-ref/
+
+   fdisk /dev/sd[X]
+
+   ## # If there are problems with a used disk try...
+
+----------------------------
+   ZFS
+# https://pve.proxmox.com/wiki/ZFS:_Tips_and_Tricks
+# edit /etc/modprobe.d/zfs.conf
+
+zpool create -f -o ashift=12 zpool01 raidz1 /dev/disk/by-id/scsi-35002538a986bb9c0 /dev/disk/by-id/scsi-35002538a986dc870 /dev/disk/by-id/scsi-35002538a48a15520 /dev/disk/by-id/scsi-35002538a986d1d40 raidz1 /dev/disk/by-id/scsi-35002538a986d1f00 /dev/disk/by-id/scsi-35002538a48943910 /dev/disk/by-id/scsi-35002538a986bbbd0 /dev/disk/by-id/scsi-35002538a48a0ef10 
+zfs create -o mountpoint=/mnt/ISO -o quota=100GB zpool01/ISO
+
+
+# ZFS tuning for a proxmox machine that reserves 12GB for ZFS
+#
+# Don't let ZFS use less than 4GB and more than 12GB
+options zfs zfs_arc_min=4294967296
+options zfs zfs_arc_max=12884901888
+
+
+OPTIONS:
+Mirror           		270000	19000	1800	850
+4x2	4 vdev by 2 drives	4 failure	7.68
+	Read IOPS       	2160000			
+	Write IOPS       	19000			
+	Stream Read MB/s	14400			
+	Stream Write MB/s	850			
+					
+RAIDz1					
+1x8	1 vdev by 8 drives 	1 failure 	13.44
+	Read IOPS       	270000			
+	Write IOPS      	19000			
+	Stream Read MB/s	1800			
+	Stream Write MB/s	850			
+					
+2x4	2 vdev by 4 drives	2 failure	11.52			
+	Read IOPS       	540000			
+	Write IOPS      	38000			
+	Stream Read MB/s	5400			
+	Stream Write MB/s	2550			
+
+			
+RAIDz2			
+2x4	2 vdev by 4 drives	4 failure	7.68
+	Read IOPS       	540000	
+	Write IOPS      	38000	
+	Stream Read MB/s	5400	
+	Stream Write MB/s	2550	
+
+
+----------------------------
+
+
+DISK="/dev/sda"
+
+# Zap the disk to a fresh, usable state (zap-all is important, b/c MBR has to be clean)
+sgdisk --zap-all $DISK
+
+# Wipe a large portion of the beginning of the disk to remove more LVM metadata that may be present
+dd if=/dev/zero of="$DISK" bs=1M count=100 oflag=direct,dsync
+
+# SSDs may be better cleaned with blkdiscard instead of dd
+blkdiscard $DISK
+
+# Inform the OS of partition table changes
+partprobe $DISK
+
+----------------------------
+   Ceph
+pveceph init --network 10.253.1.0/24
+
+pveceph osd create /dev/sda
+pveceph osd create /dev/sdb
+pveceph osd create /dev/sdc
+pveceph osd create /dev/sdd
+pveceph osd create /dev/sde
+pveceph osd create /dev/sdf
+pveceph osd create /dev/sdg
+pveceph osd create /dev/sdh
+----------------------------
+
+Add datastore and directory to storage
+
+
+3. SMART Monitoring
+https://pve.proxmox.com/wiki/Disk_Health_Monitoring
+
+smartctl -a /dev/sdX
+
+smartctl -s on /dev/sdX
+
+for I in a b c d e f g h i j
+do
+echo "/dev/sd${I}"
+smartctl -s on /dev/sd${I}
+done
+
+
+
+
+4. PCI Passthrough
+   efibootmgr -v
+   vi /etc/default/grub
+      GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on iommu=pt"
+
+then reboot
+
+
+VFIO modules
+
+vi /etc/modules
+
+vfio
+vfio_iommu_type1
+vfio_pci
+vfio_virqfd
+
+update-initramfs -u -k all
+
+then reboot
+
+
+5. Verify Networking
+
+/etc/network/interfaces
+systemctl restart networking.service
+
+
+Time:
+https://pve.proxmox.com/wiki/Time_Synchronization
+
+server time-d-b.nist.gov iburst
+pool 3.pool.ntp.org iburst
+systemctl restart chronyd
+
+6. Proxmox cluster
+
+
+7. NFS Share
+
+
+8. Backup jobs
+
+
+9. VirtI/O ISO 
+
+10. Admin user
+In WebUI:
+   Datacenter -> Permissions -> Groups 
+     create group "pveadmin"
+   Datacenter -> Permissions -> Users
+     create user iceadmin, add to group pveadmin
+   Datacenter -> Permissions 
+     add group permissions to "/" role Administrator
+
+At console:
+   groupadd pveadmin -g 900
+   useradd -g 900 -u 900 -c "Administrator for Ice Systems" -m -d /home/iceadmin -s /usr/bin/bash iceadmin
+   passwd iceadmin
+iceadmin
+
+
+https://csbox.symmcom.com/s/qXDky9gGXxkjJ6M
