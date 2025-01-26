@@ -11,17 +11,26 @@ vi /etc/hosts /etc/hostname /etc/mailname /etc/postfix/main.cf
 1. Config updates
    Create a file at /etc/apt/sources.list.d/pve-no-enterprise.list 
    ----------------------------
-   # not for production use
-   deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription
+# not for production use
+## #deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription
+
    ----------------------------
    
    ceph Create a file at /etc/apt/sources.list.d/ceph.list
    ----------------------------
-   # not for production use
-   deb http://download.proxmox.com/debian/ceph-quincy bookworm no-subscription
+# For production enterprise use.
+deb https://enterprise.proxmox.com/debian/ceph-quincy bookworm enterprise
+
+# not for production use
+## #deb http://download.proxmox.com/debian/ceph-quincy bookworm no-subscription
    ----------------------------
+
    # For production enterprise use.
-   vi /etc/apt/sources.list.d/pve-no-enterprise.list /etc/apt/sources.list.d/pve-enterprise.list  /etc/apt/sources.list.d/ceph.list
+comment out the non-prod
+vi /etc/apt/sources.list.d/pve-no-enterprise.list /etc/apt/sources.list.d/pve-enterprise.list  /etc/apt/sources.list.d/ceph.list
+
+# For production enterprise use.
+deb https://enterprise.proxmox.com/debian/pve bookworm pve-enterprise
 
    apt update
    apt -y install openvswitch-switch net-tools lshw nmap htop fio iperf3 zfsutils zfs-initramfs
