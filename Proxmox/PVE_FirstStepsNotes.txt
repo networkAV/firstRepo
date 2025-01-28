@@ -223,8 +223,4 @@ In WebUI:
 At console:
    groupadd pveadmin -g 900
    useradd -g 900 -u 900 -c "Administrator for Ice Systems" -m -d /home/iceadmin -s /usr/bin/bash iceadmin
-   passwd iceadmin
-iceadmin
 
-
-https://csbox.symmcom.com/s/qXDky9gGXxkjJ6M
