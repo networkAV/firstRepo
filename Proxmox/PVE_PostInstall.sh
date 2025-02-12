@@ -9,7 +9,7 @@
 # Define variables
 
 NOSUBSOURCE=/etc/apt/sources.list.d/pve-no-enterprise.list
-ENTSOURCE=/etc/apt/sources.list.d/pve-enterprise.lis
+ENTSOURCE=/etc/apt/sources.list.d/pve-enterprise.list
 CEPHSOURCE=/etc/apt/sources.list.d/ceph.list
 GRUB_FILE=/etc/default/grub
 VFIO_MOD=/etc/modules
