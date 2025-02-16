@@ -196,8 +196,13 @@ systemctl restart networking.service
 Time:
 https://pve.proxmox.com/wiki/Time_Synchronization
 
+vi /etc/chrony/chrony.conf
+
+# Use Debian vendor zone.
+## #pool 2.debian.pool.ntp.org iburst
 server time-d-b.nist.gov iburst
 pool 3.pool.ntp.org iburst
+
 systemctl restart chronyd
 
 6. Proxmox cluster
