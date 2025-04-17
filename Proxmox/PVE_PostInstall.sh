@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #==========================================================
 # PVE Host build script
 # Allen Vonderschmidt
