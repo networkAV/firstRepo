@@ -55,7 +55,7 @@ then
 echo "Running updates"
 
 apt update
-apt -y install openvswitch-switch net-tools lshw nmap htop fio zfsutils zfs-initramfs
+apt -y install openvswitch-switch net-tools lshw nmap htop fio zfsutils zfs-initramfs snmp snmpd nut nut-client nut-server
 apt -y dist-upgrade
 
     # end updates
