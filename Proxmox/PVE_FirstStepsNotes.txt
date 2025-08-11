@@ -33,8 +33,8 @@ vi /etc/apt/sources.list.d/pve-no-enterprise.list /etc/apt/sources.list.d/pve-en
 deb https://enterprise.proxmox.com/debian/pve bookworm pve-enterprise
 
    apt update
-   apt -y install openvswitch-switch net-tools lshw nmap htop fio iperf3 zfsutils zfs-initramfs snmp snmpd nut nut-client nut-server
-
+   apt -y install openvswitch-switch net-tools lshw nmap htop fio zfsutils zfs-initramfs snmp snmpd nut nut-client nut-server needrestart
+   apt -y install iperf3 
    apt -y dist-upgrade
 
    apt update
