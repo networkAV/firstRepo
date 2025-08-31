@@ -71,8 +71,8 @@ read -p "Create IceAdmin user? [Yy] " -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 echo "Creating IceAdmin account and group"
-groupadd pveadmin -g 900
-useradd -g 900 -u 1000 -c "Administrator for Ice Systems" -m -d /home/iceman -s /usr/bin/bash iceman
+groupadd pveadmin -g 9000
+useradd -g 9000 -u 9000 -c "Administrator for Ice Systems" -m -d /home/iceadmin -s /usr/bin/bash iceadmin
     # end IceAdmin account
 fi
 
