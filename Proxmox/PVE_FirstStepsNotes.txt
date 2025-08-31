@@ -227,6 +227,6 @@ In WebUI:
      add group permissions to "/" role Administrator
 
 At console:
-   groupadd pveadmin -g 900
-   useradd -g 900 -u 900 -c "Administrator for Ice Systems" -m -d /home/iceadmin -s /usr/bin/bash iceadmin
+   groupadd pveadmin -g 9000
+   useradd -g 9000 -u 9000 -c "Administrator for Ice Systems" -m -d /home/iceadmin -s /usr/bin/bash iceadmin
 
